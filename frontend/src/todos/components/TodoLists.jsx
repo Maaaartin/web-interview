@@ -20,9 +20,9 @@ export const TodoLists = ({ style }) => {
 
   useEffect(() => {
     (async () => {
-      const tdList = await fetchTodoLists();
+      const todoLists = await fetchTodoLists();
       const allTodos = await Promise.all(
-        tdList.map(async (td) => {
+        Object.values(todoLists).map(async (td) => {
           return { ...td, todos: await fetchTodosForList(td.id) };
         })
       );

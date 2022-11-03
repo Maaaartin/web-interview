@@ -5,7 +5,7 @@ class Todo extends BaseModel {
 
   static async findByListId(listId) {
     const data = await this.readAndParse();
-    return data.filter((d) => d.listId === listId);
+    return Object.values(data).filter((d) => d.listId === listId);
   }
 
   get defaultValues() {

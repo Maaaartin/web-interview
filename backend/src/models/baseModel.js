@@ -7,10 +7,11 @@ const BASE_PATH = Path.join(__dirname, '..', '..', '.data');
 class BaseModel {
   static dataFile = null;
   values_ = null;
-  #exists = false;
+  id = null;
+
   /**
    * Reads json file and parses the output
-   * @returns {Promise<any[]>}
+   * @returns {Promise<Record<string, any>>}
    */
   static async readAndParse() {
     try {
@@ -18,7 +19,7 @@ class BaseModel {
       return JSON.parse(data);
     } catch (e) {
       if (e.code === 'ENOENT') {
-        return [];
+        return {};
       }
       throw e;
     }
@@ -33,15 +34,19 @@ class BaseModel {
   }
   static async getById(id) {
     const data = await this.readAndParse();
-    const thingy = data.find((d) => d.id === id) ?? null;
-    return new this(thingy);
+    if (data[id]) {
+      return new this(data[id]);
+    }
+    return null;
   }
   static getAll() {
     return this.readAndParse();
   }
 
   constructor(props = {}) {
-    this.values_ = { ...this.defaultValues, id: crypto.randomUUID(), ...props };
+    const id = props.id || crypto.randomUUID();
+    this.id = id;
+    this.values_ = { ...this.defaultValues, ...props };
   }
 
   set values(v) {
@@ -58,14 +63,9 @@ class BaseModel {
 
   async save() {
     const data = await this.constructor.readAndParse();
-    const found = data.indexOf((d) => d.id === this.values.id);
-    if (found > -1) {
-      data[found] = this.values;
-    } else {
-      data.concat(this.values);
-    }
-    await this.constructor.write(data);
-    return this.values;
+    const newData = { ...data, [this.id]: this.values };
+    await this.constructor.write(newData);
+    return { ...this.values, id: this.id };
   }
 }
 
