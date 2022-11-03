@@ -10,53 +10,52 @@ import {
 } from '@mui/material';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import { TodoListForm } from './TodoListForm';
-import Axios from 'axios';
 
-const fetchTodoLists = async () => {
-  const { data } = await Axios.get(`http://${window.location.hostname}:3001/api/list`);
-
-  return data;
-};
+import _ from 'lodash';
+import { fetchTodoLists } from '../../api.js';
 
 export const TodoLists = ({ style }) => {
-  const [todoLists, setTodoLists] = useState([]);
+  const [todoLists, setTodoLists] = useState({});
   const [activeList, setActiveList] = useState();
 
   useEffect(() => {
-    fetchTodoLists().then(setTodoLists);
+    (async () => {
+      const data = await fetchTodoLists();
+      const todoList = data.reduce((obj, item) => ({ ...obj, [item.id]: item }), {});
+      setTodoLists(todoList);
+    })();
   }, []);
 
-  if (!todoLists.length) {
+  if (_.isEmpty(todoLists)) {
+    // TODO add spinner
     return null;
   }
-  const todoMap = todoLists.reduce((obj, item) => {
-    return { ...obj, [item.id]: item };
-  }, {});
+
   return (
     <Fragment>
       <Card style={style}>
         <CardContent>
           <Typography component='h2'>My Todo Lists</Typography>
           <List>
-            {Object.keys(todoMap).map((key) => (
+            {Object.entries(todoLists).map(([key, { title }]) => (
               <ListItem key={key} button onClick={() => setActiveList(key)}>
                 <ListItemIcon>
                   <ReceiptIcon />
                 </ListItemIcon>
-                <ListItemText primary={todoMap[key].title} />
+                <ListItemText primary={title} />
               </ListItem>
             ))}
           </List>
         </CardContent>
       </Card>
-      {todoMap[activeList] && (
+      {todoLists[activeList] && (
         <TodoListForm
           key={activeList} // use key to make React recreate component to reset internal state
-          todoList={todoMap[activeList]}
+          todoList={todoLists[activeList]}
           saveTodoList={(id, { todos }) => {
-            const listToUpdate = todoMap[id];
+            const listToUpdate = todoLists[id];
             setTodoLists({
-              ...todoMap,
+              ...todoLists,
               [id]: { ...listToUpdate, todos },
             });
           }}

@@ -1,4 +1,5 @@
-const fs = require('fs/promises');
+const fs = require('fs/promises'),
+  crypto = require('crypto');
 
 const path = `${__dirname}/../../.data/list.json`;
 
@@ -15,8 +16,8 @@ class TodoList {
     }
   }
 
-  constructor(props) {
-    this.props = props;
+  constructor(props = {}) {
+    this.props = { ...props, id: crypto.randomUUID() };
   }
 
   async save() {
