@@ -12,10 +12,13 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import { TodoListForm } from './TodoListForm';
 import _ from 'lodash';
 import { fetchTodoLists, fetchTodosForList, createTodo } from '../../api.js';
+import { useContext } from 'react';
+import AlertContext from '../../Alert';
 
 export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
   const [activeList, setActiveList] = useState();
+  const { showAlert } = useContext(AlertContext);
 
   const handleAddTodo = async () => {
     try {
@@ -27,7 +30,7 @@ export const TodoLists = ({ style }) => {
         [activeList]: { ...todoLists[activeList], todos: updatedTodos },
       });
     } catch (e) {
-      // TODO handle error
+      showAlert(e.message);
     }
   };
 

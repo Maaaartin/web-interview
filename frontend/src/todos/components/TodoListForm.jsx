@@ -3,6 +3,7 @@ import { TextField, Card, CardContent, CardActions, Button, Typography } from '@
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { useEffect } from 'react';
+import _ from 'lodash';
 
 export const TodoListForm = ({ todoList, saveTodoList, onAddTodo }) => {
   const [todos, setTodos] = useState(todoList.todos);
@@ -32,12 +33,7 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo }) => {
                 label='What to do?'
                 value={todo.title || ''}
                 onChange={(event) => {
-                  setTodos([
-                    // immutable update
-                    ...todos.slice(0, index),
-                    { ...todos[index], title: event.target.value },
-                    ...todos.slice(index + 1),
-                  ]);
+                  setTodos(_.set(_.clone(todos), `[${index}].title`, event.target.value));
                 }}
               />
               <Button
@@ -45,11 +41,7 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo }) => {
                 size='small'
                 color='secondary'
                 onClick={() => {
-                  setTodos([
-                    // immutable delete
-                    ...todos.slice(0, index),
-                    ...todos.slice(index + 1),
-                  ]);
+                  setTodos(todos.filter((_t, i) => i !== index));
                 }}
               >
                 <DeleteIcon />

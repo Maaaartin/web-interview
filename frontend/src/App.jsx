@@ -1,6 +1,8 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography } from '@mui/material';
+import { useState } from 'react';
+import { AppBar, Toolbar, Typography, Alert, Snackbar } from '@mui/material';
 import { TodoLists } from './todos/components/TodoLists';
+import AlertContext from './Alert';
 
 const MainAppBar = () => {
   return (
@@ -22,14 +24,31 @@ const contentWrapperStyle = {
   maxWidth: '80rem',
   flexGrow: 1,
 };
+
 const MainWrapper = ({ children }) => {
+  const [alertState, setAlertState] = useState({ open: false, message: null });
   return (
-    <div style={mainWrapperStyle}>
-      <MainAppBar />
-      <div style={centerContentWrapper}>
-        <div style={contentWrapperStyle}>{children}</div>
+    <AlertContext.Provider
+      value={{
+        showAlert: (message) => {
+          setAlertState({ open: true, message });
+        },
+      }}
+    >
+      <Snackbar
+        open={alertState.open}
+        autoHideDuration={1000}
+        onClose={() => setAlertState({ open: false })}
+      >
+        <Alert severity='error'>{alertState.message}</Alert>
+      </Snackbar>
+      <div style={mainWrapperStyle}>
+        <MainAppBar />
+        <div style={centerContentWrapper}>
+          <div style={contentWrapperStyle}>{children}</div>
+        </div>
       </div>
-    </div>
+    </AlertContext.Provider>
   );
 };
 
