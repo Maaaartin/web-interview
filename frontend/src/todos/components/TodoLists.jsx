@@ -12,7 +12,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import { TodoListForm } from './TodoListForm';
 
 import _ from 'lodash';
-import { fetchTodoLists } from '../../api.js';
+import { fetchTodoLists, fetchTodosForList, createTodo } from '../../api.js';
 
 export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
@@ -20,8 +20,14 @@ export const TodoLists = ({ style }) => {
 
   useEffect(() => {
     (async () => {
-      const data = await fetchTodoLists();
-      const todoList = data.reduce((obj, item) => ({ ...obj, [item.id]: item }), {});
+      const tdList = await fetchTodoLists();
+      const allTodos = await Promise.all(
+        tdList.map(async (td) => {
+          return { ...td, todos: await fetchTodosForList(td.id) };
+        })
+      );
+
+      const todoList = allTodos.reduce((obj, item) => ({ ...obj, [item.id]: item }), {});
       setTodoLists(todoList);
     })();
   }, []);
@@ -58,6 +64,10 @@ export const TodoLists = ({ style }) => {
               ...todoLists,
               [id]: { ...listToUpdate, todos },
             });
+          }}
+          onAddTodo={() => {
+            createTodo(activeList);
+            console.log('object');
           }}
         />
       )}

@@ -3,7 +3,7 @@ import { TextField, Card, CardContent, CardActions, Button, Typography } from '@
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
-export const TodoListForm = ({ todoList, saveTodoList }) => {
+export const TodoListForm = ({ todoList, saveTodoList, onAddTodo }) => {
   const [todos, setTodos] = useState(todoList.todos);
 
   const handleSubmit = (event) => {
@@ -19,7 +19,7 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
           onSubmit={handleSubmit}
           style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
         >
-          {todos.map((name, index) => (
+          {todos.map((todo, index) => (
             <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
               <Typography sx={{ margin: '8px' }} variant='h6'>
                 {index + 1}
@@ -27,7 +27,7 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
               <TextField
                 sx={{ flexGrow: 1, marginTop: '1rem' }}
                 label='What to do?'
-                value={name}
+                value={todo.title}
                 onChange={(event) => {
                   setTodos([
                     // immutable update
@@ -58,7 +58,8 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
               type='button'
               color='primary'
               onClick={() => {
-                setTodos([...todos, '']);
+                onAddTodo();
+                // setTodos([...todos, '']);
               }}
             >
               Add Todo <AddIcon />
