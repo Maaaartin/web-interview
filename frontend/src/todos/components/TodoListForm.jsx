@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { TextField, Card, CardContent, CardActions, Button, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import { useEffect } from 'react';
 
 export const TodoListForm = ({ todoList, saveTodoList, onAddTodo }) => {
   const [todos, setTodos] = useState(todoList.todos);
-
+  useEffect(() => {
+    setTodos(todoList.todos);
+  }, [todoList.todos]);
   const handleSubmit = (event) => {
     event.preventDefault();
     saveTodoList(todoList.id, { todos });
@@ -27,12 +30,12 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo }) => {
               <TextField
                 sx={{ flexGrow: 1, marginTop: '1rem' }}
                 label='What to do?'
-                value={todo.title}
+                value={todo.title || ''}
                 onChange={(event) => {
                   setTodos([
                     // immutable update
                     ...todos.slice(0, index),
-                    event.target.value,
+                    { ...todos[index], title: event.target.value },
                     ...todos.slice(index + 1),
                   ]);
                 }}

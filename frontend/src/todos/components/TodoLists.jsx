@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import { TodoListForm } from './TodoListForm';
-
 import _ from 'lodash';
 import { fetchTodoLists, fetchTodosForList, createTodo } from '../../api.js';
 
@@ -18,11 +17,25 @@ export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
   const [activeList, setActiveList] = useState();
 
+  const handleAddTodo = async () => {
+    try {
+      await createTodo(activeList);
+      const updatedTodos = await fetchTodosForList(activeList);
+
+      setTodoLists({
+        ...todoLists,
+        [activeList]: { ...todoLists[activeList], todos: updatedTodos },
+      });
+    } catch (e) {
+      // TODO handle error
+    }
+  };
+
   useEffect(() => {
     (async () => {
-      const todoLists = await fetchTodoLists();
+      const lists = await fetchTodoLists();
       const allTodos = await Promise.all(
-        Object.values(todoLists).map(async (td) => {
+        Object.values(lists).map(async (td) => {
           return { ...td, todos: await fetchTodosForList(td.id) };
         })
       );
@@ -66,8 +79,7 @@ export const TodoLists = ({ style }) => {
             });
           }}
           onAddTodo={() => {
-            createTodo(activeList);
-            console.log('object');
+            handleAddTodo();
           }}
         />
       )}
