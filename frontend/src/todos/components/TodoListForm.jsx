@@ -1,15 +1,15 @@
-import React, { useState } from 'react'
-import { TextField, Card, CardContent, CardActions, Button, Typography } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import AddIcon from '@mui/icons-material/Add'
+import React, { useState } from 'react';
+import { TextField, Card, CardContent, CardActions, Button, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 export const TodoListForm = ({ todoList, saveTodoList }) => {
-  const [todos, setTodos] = useState(todoList.todos)
+  const [todos, setTodos] = useState(todoList.todos);
 
   const handleSubmit = (event) => {
-    event.preventDefault()
-    saveTodoList(todoList.id, { todos })
-  }
+    event.preventDefault();
+    saveTodoList(todoList.id, { todos });
+  };
 
   return (
     <Card sx={{ margin: '0 1rem' }}>
@@ -34,7 +34,7 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
                     ...todos.slice(0, index),
                     event.target.value,
                     ...todos.slice(index + 1),
-                  ])
+                  ]);
                 }}
               />
               <Button
@@ -46,7 +46,7 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
                     // immutable delete
                     ...todos.slice(0, index),
                     ...todos.slice(index + 1),
-                  ])
+                  ]);
                 }}
               >
                 <DeleteIcon />
@@ -58,7 +58,7 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
               type='button'
               color='primary'
               onClick={() => {
-                setTodos([...todos, ''])
+                setTodos([...todos, '']);
               }}
             >
               Add Todo <AddIcon />
@@ -70,5 +70,5 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
         </form>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
