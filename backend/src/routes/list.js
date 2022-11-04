@@ -1,6 +1,7 @@
 module.exports = () => {
   const router = require('express')(),
-    TodoList = require('../models/todoList.js');
+    TodoList = require('../models/todoList.js'),
+    Todo = require('../models/todo.js');
 
   router.get('/', async (_req, res) => {
     try {
@@ -22,6 +23,17 @@ module.exports = () => {
     try {
       const tdList = await new TodoList(req.body).save();
       res.json(tdList.values);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  });
+
+  router.delete('/:listId', async (req, res) => {
+    try {
+      const { listId } = req.params;
+      await TodoList.deleteById(listId);
+      const deleted = await Todo.deleteByListId(listId);
+      res.json(deleted);
     } catch (e) {
       res.status(500).send(e.message);
     }

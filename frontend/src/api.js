@@ -42,6 +42,13 @@ export const createTodoList = (title) => {
   return makeRequest({ url: BASE_URL.concat('/api/list/'), method: 'POST', data: { title } });
 };
 
+export const deleteTodoList = (listId) => {
+  return makeRequest({
+    url: BASE_URL.concat('/api/list/', listId),
+    method: 'DELETE',
+  });
+};
+
 export const createTodo = (listId) => {
   return makeRequest({ url: BASE_URL.concat('/api/todo/', listId), method: 'POST' });
 };

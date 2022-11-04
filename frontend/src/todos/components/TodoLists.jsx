@@ -13,10 +13,12 @@ import {
   Stack,
   Button,
   CardActions,
+  ListItemButton,
 } from '@mui/material';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { TodoListForm } from './TodoListForm';
 import _ from 'lodash';
 import {
@@ -24,6 +26,7 @@ import {
   fetchTodosForList,
   createTodo,
   // updateTodoList,
+  deleteTodoList,
   deleteTodo,
   createTodoList,
   updateTodo,
@@ -149,6 +152,17 @@ export const TodoLists = ({ style }) => {
                   <ReceiptIcon />
                 </ListItemIcon>
                 <ListItemText primary={title} />
+                <ListItemButton
+                  style={{ flex: 'revert' }}
+                  onClick={(event) => {
+                    console.log('click');
+                    event.stopPropagation();
+                    // TODO update on frontend
+                    deleteTodoList(key);
+                  }}
+                >
+                  <DeleteIcon color='secondary' />
+                </ListItemButton>
               </ListItem>
             ))}
           </List>
@@ -158,7 +172,7 @@ export const TodoLists = ({ style }) => {
               <TextField
                 autoFocus
                 sx={{ flexGrow: 1, marginTop: '1rem' }}
-                label='Rakamakafon'
+                label='List name'
                 value={newListName}
                 onChange={(event) => setNewListName(event.target.value)}
                 InputProps={{
@@ -167,7 +181,7 @@ export const TodoLists = ({ style }) => {
                       <Button
                         sx={{ margin: '8px' }}
                         size='small'
-                        color='error'
+                        color='secondary'
                         onClick={() => setNewListName(null)}
                       >
                         <ClearIcon />
