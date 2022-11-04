@@ -4,28 +4,29 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import _ from 'lodash';
 
+const getTodoDebouncer = () => {
+  let action_ = null;
+  const debounce = _.debounce(() => {
+    action_?.();
+  }, 1000);
+  return Object.freeze({
+    exec: (action) => {
+      action_ = action;
+      return debounce();
+    },
+    cancel: debounce.cancel,
+  });
+};
+
 export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }) => {
   const [todos, setTodos] = useState(todoList.todos);
-  const indexToUpdate = useRef(-1);
   const isFirstRun = useRef(true);
-  const updateTodoRef = useRef(
-    _.debounce(() => {
-      console.log(indexToUpdate.current);
-      onUpdateTodo(todos[indexToUpdate.current]);
-      // saveTodoList(todoList.id, { todos });
-    }, 1000)
-  );
+  const updateTodoRef = useRef(getTodoDebouncer());
+
   useEffect(() => {
     setTodos(todoList.todos);
   }, [todoList.todos]);
-  // useEffect(() => {
-  //   if (isFirstRun.current) {
-  //     isFirstRun.current = false;
-  //     return;
-  //   }
 
-  //   updateTodoRef.current?.();
-  // }, [todos]);
   // destructor
   useEffect(
     () => () => {
@@ -41,9 +42,9 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }
   };
 
   const onInputChange = (event, index) => {
-    setTodos(_.set(_.clone(todos), `[${index}].title`, event.target.value));
-    indexToUpdate.current = index;
-    updateTodoRef.current?.();
+    const updatedTodos = _.set(_.clone(todos), `[${index}].title`, event.target.value);
+    setTodos(updatedTodos);
+    updateTodoRef.current?.exec(() => onUpdateTodo(_.clone(updatedTodos[index])));
   };
 
   return (
@@ -78,13 +79,7 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }
             </div>
           ))}
           <CardActions>
-            <Button
-              type='button'
-              color='primary'
-              onClick={() => {
-                onAddTodo();
-              }}
-            >
+            <Button type='button' color='primary' onClick={onAddTodo}>
               Add Todo <AddIcon />
             </Button>
             <Button type='submit' variant='contained' color='primary'>

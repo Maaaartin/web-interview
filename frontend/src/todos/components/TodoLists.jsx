@@ -11,7 +11,13 @@ import {
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import { TodoListForm } from './TodoListForm';
 import _ from 'lodash';
-import { fetchTodoLists, fetchTodosForList, createTodo, updateTodoList } from '../../api.js';
+import {
+  fetchTodoLists,
+  fetchTodosForList,
+  createTodo,
+  updateTodoList,
+  updateTodo,
+} from '../../api.js';
 import { useContext } from 'react';
 import AlertContext from '../../Alert';
 
@@ -35,7 +41,7 @@ export const TodoLists = ({ style }) => {
   };
 
   const handleUpdateTodo = (todo) => {
-    console.log(todo.title);
+    updateTodo(todo);
   };
 
   const handleSaveList = async (id, { todos }) => {

@@ -16,6 +16,11 @@ export const createTodo = async (listId) => {
   return data;
 };
 
+export const updateTodo = async (todo) => {
+  const { data } = await Axios.put(BASE_URL.concat('/api/todo/', todo.id), todo);
+  return data;
+};
+
 export const updateTodoList = async (tdList) => {
   const { data } = await Axios.put(BASE_URL.concat('/api/list/', tdList.id), tdList);
   return data;

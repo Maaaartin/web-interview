@@ -13,8 +13,8 @@ module.exports = () => {
   });
 
   router.put('/:listId', async (req, res) => {
-    const tdList = await TodoList.getById(req.params.listId);
-    console.log(tdList);
+    // const tdList = await TodoList.getById(req.params.listId);
+
     // tdList.values = req.body
     return res.send('');
   });

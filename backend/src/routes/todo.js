@@ -21,5 +21,10 @@ module.exports = () => {
     res.send(newTodo);
   });
 
+  router.put('/:id', async (req, res) => {
+    const todo = await Todo.getById(req.params.id);
+    console.log(todo);
+    res.send('s');
+  });
   return router;
 };

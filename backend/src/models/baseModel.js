@@ -64,9 +64,10 @@ class BaseModel {
 
   async save() {
     const data = await this.constructor.readAndParse();
-    const newData = { ...data, [this.id]: this.values };
+    const valuesWithId = { ...this.values, id: this.id };
+    const newData = { ...data, [this.id]: valuesWithId };
     await this.constructor.write(newData);
-    return { ...this.values, id: this.id };
+    return valuesWithId;
   }
 }
 
