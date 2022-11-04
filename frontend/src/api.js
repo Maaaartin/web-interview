@@ -1,32 +1,62 @@
 import Axios from 'axios';
+
 const BASE_URL = `http://${window.location.hostname}:3001`;
 
-export const fetchTodoLists = async () => {
-  const { data } = await Axios.get(BASE_URL.concat('/api/list'));
-  return data;
+export class HttpError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = 'HttpError';
+    this.status = status;
+  }
+}
+
+/**
+ *
+ * @param {import('axios').AxiosRequestConfig} config
+ * @returns {any} data
+ */
+const makeRequest = async (config) => {
+  try {
+    const { data } = await Axios(config);
+    return data;
+  } catch (e) {
+    if (Axios.isAxiosError(e)) {
+      throw new HttpError(e.response?.data || e.message, e.response?.status);
+    }
+    if (e instanceof Error) {
+      throw e;
+    }
+    throw new Error('Unknown error');
+  }
 };
 
-export const fetchTodosForList = async (listId) => {
-  const { data } = await Axios.get(BASE_URL.concat('/api/todo/', listId));
-  return data;
+export const fetchTodoLists = () => {
+  return makeRequest({ url: BASE_URL.concat('/api/list'), method: 'GET' });
 };
 
-export const createTodo = async (listId) => {
-  const { data } = await Axios.post(BASE_URL.concat('/api/todo/', listId), {});
-  return data;
+export const fetchTodosForList = (listId) => {
+  return makeRequest({ url: BASE_URL.concat('/api/todo/', listId), method: 'GET' });
 };
 
-export const updateTodo = async (todo) => {
-  const { data } = await Axios.put(BASE_URL.concat('/api/todo/', todo.id), todo);
-  return data;
+export const createTodo = (listId) => {
+  return makeRequest({ url: BASE_URL.concat('/api/todo/', listId), method: 'POST' });
 };
 
-export const updateTodoList = async (tdList) => {
-  const { data } = await Axios.put(BASE_URL.concat('/api/list/', tdList.id), tdList);
-  return data;
+export const updateTodo = (todo) => {
+  return makeRequest({ url: BASE_URL.concat('/api/todo/', todo.id), method: 'PUT', data: todo });
 };
 
-export const deleteTodo = async (todoId) => {
-  const { data } = await Axios.delete(BASE_URL.concat('/api/todo/', todoId));
-  return data;
+export const updateTodoList = (tdList) => {
+  return makeRequest({
+    url: BASE_URL.concat('/api/list/', tdList.id),
+    method: 'PUT',
+    data: tdList,
+  });
+};
+
+export const deleteTodo = (todoId) => {
+  return makeRequest({
+    url: BASE_URL.concat('/api/todo/', todoId),
+    method: 'DELETE',
+  });
 };

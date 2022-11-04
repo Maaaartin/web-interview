@@ -83,17 +83,22 @@ export const TodoLists = ({ style }) => {
 
   useEffect(() => {
     (async () => {
-      const lists = await fetchTodoLists();
-      const allTodos = await Promise.all(
-        Object.values(lists).map(async (td) => {
-          return { ...td, todos: await fetchTodosForList(td.id) };
-        })
-      );
+      try {
+        const lists = await fetchTodoLists();
+        const allTodos = await Promise.all(
+          Object.values(lists).map(async (td) => {
+            return { ...td, todos: await fetchTodosForList(td.id) };
+          })
+        );
 
-      const todoList = allTodos.reduce((obj, item) => ({ ...obj, [item.id]: item }), {});
-      setTodoLists(todoList);
+        const todoList = allTodos.reduce((obj, item) => ({ ...obj, [item.id]: item }), {});
+        setTodoLists(todoList);
+      } catch (e) {
+        console.log(e);
+        alertError('Failed to fetch data', e.message);
+      }
     })();
-  }, []);
+  }, [alertError]);
 
   if (_.isEmpty(todoLists)) {
     // TODO add spinner

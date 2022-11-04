@@ -7,7 +7,6 @@ module.exports = () => {
       const tdList = await TodoList.getAll();
       res.json(tdList);
     } catch (e) {
-      // TODO check error on frontend
       res.status(500).send(e.message);
     }
   });
