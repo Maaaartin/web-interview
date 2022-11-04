@@ -7,6 +7,8 @@ import {
   ListItemText,
   ListItemIcon,
   Typography,
+  CircularProgress,
+  Stack,
 } from '@mui/material';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import { TodoListForm } from './TodoListForm';
@@ -94,15 +96,19 @@ export const TodoLists = ({ style }) => {
         const todoList = allTodos.reduce((obj, item) => ({ ...obj, [item.id]: item }), {});
         setTodoLists(todoList);
       } catch (e) {
-        console.log(e);
         alertError('Failed to fetch data', e.message);
       }
     })();
-  }, [alertError]);
+    // adding alertError to deps causes making multiple requests
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (_.isEmpty(todoLists)) {
-    // TODO add spinner
-    return null;
+    return (
+      <Stack alignItems='center'>
+        <CircularProgress />
+      </Stack>
+    );
   }
 
   return (
