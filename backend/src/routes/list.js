@@ -18,5 +18,14 @@ module.exports = () => {
     return res.send('');
   });
 
+  router.post('/', async (req, res) => {
+    try {
+      const tdList = await new TodoList(req.body).save();
+      res.json(tdList.values);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  });
+
   return router;
 };

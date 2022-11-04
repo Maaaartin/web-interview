@@ -38,6 +38,10 @@ export const fetchTodosForList = (listId) => {
   return makeRequest({ url: BASE_URL.concat('/api/todo/', listId), method: 'GET' });
 };
 
+export const createTodoList = (title) => {
+  return makeRequest({ url: BASE_URL.concat('/api/list/'), method: 'POST', data: { title } });
+};
+
 export const createTodo = (listId) => {
   return makeRequest({ url: BASE_URL.concat('/api/todo/', listId), method: 'POST' });
 };

@@ -39,7 +39,7 @@ class BaseModel {
   }
 
   static async write(data) {
-    await fs.writeFile(Path.join(BASE_PATH, this.dataFile), JSON.stringify(data, null, '\t'), {
+    await fs.writeFile(Path.join(BASE_PATH, this.dataFile), JSON.stringify(data, null, 2), {
       encoding: 'utf-8',
       flag: 'w',
     });
@@ -91,7 +91,7 @@ class BaseModel {
     const valuesWithId = { ...this.values, id: this.id };
     const newData = { ...data, [this.id]: valuesWithId };
     await this.constructor.write(newData);
-    return valuesWithId;
+    return this;
   }
 }
 
