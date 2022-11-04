@@ -4,6 +4,7 @@ const fs = require('fs/promises'),
 
 const BASE_PATH = Path.join(__dirname, '..', '..', '.data');
 
+// TODO handle file creation
 class BaseModel {
   static dataFile = null;
   values_ = null;

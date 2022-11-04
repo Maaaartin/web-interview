@@ -11,14 +11,14 @@ import {
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import { TodoListForm } from './TodoListForm';
 import _ from 'lodash';
-import { fetchTodoLists, fetchTodosForList, createTodo } from '../../api.js';
+import { fetchTodoLists, fetchTodosForList, createTodo, updateTodoList } from '../../api.js';
 import { useContext } from 'react';
 import AlertContext from '../../Alert';
 
 export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
   const [activeList, setActiveList] = useState();
-  const { alertError } = useContext(AlertContext);
+  const { alertError, alertInfo, alertSuccess } = useContext(AlertContext);
 
   const handleAddTodo = async () => {
     try {
@@ -31,6 +31,26 @@ export const TodoLists = ({ style }) => {
       });
     } catch (e) {
       alertError('Failed to add new TODO', e.message);
+    }
+  };
+
+  const handleUpdateTodo = (todo) => {
+    console.log(todo.title);
+  };
+
+  const handleSaveList = async (id, { todos }) => {
+    const listToUpdate = todoLists[id];
+    const updatedLists = {
+      ...todoLists,
+      [id]: { ...listToUpdate, todos },
+    };
+    alertInfo('Saving changes...');
+    try {
+      await updateTodoList(updatedLists[id]);
+      setTodoLists(updatedLists);
+      alertSuccess('Changes saved');
+    } catch (e) {
+      alertError('Failed to save list', e.message);
     }
   };
 
@@ -74,17 +94,9 @@ export const TodoLists = ({ style }) => {
         <TodoListForm
           key={activeList} // use key to make React recreate component to reset internal state
           todoList={todoLists[activeList]}
-          saveTodoList={(id, { todos }) => {
-            const listToUpdate = todoLists[id];
-
-            setTodoLists({
-              ...todoLists,
-              [id]: { ...listToUpdate, todos },
-            });
-          }}
-          onAddTodo={() => {
-            handleAddTodo();
-          }}
+          saveTodoList={handleSaveList}
+          onAddTodo={handleAddTodo}
+          onUpdateTodo={handleUpdateTodo}
         />
       )}
     </Fragment>
