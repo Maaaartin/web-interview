@@ -40,8 +40,14 @@ export const TodoLists = ({ style }) => {
     }
   };
 
-  const handleUpdateTodo = (todo) => {
-    updateTodo(todo);
+  const handleUpdateTodo = async (todo) => {
+    try {
+      alertInfo('Saving changes...');
+      await updateTodo(todo);
+      alertSuccess('Changes saved');
+    } catch (e) {
+      alertError('Failed to save changes', e.message);
+    }
   };
 
   const handleSaveList = async (id, { todos }) => {

@@ -29,26 +29,22 @@ const MainWrapper = ({ children }) => {
   const [alertState, setAlertState] = useState({ open: false });
   const handleClose = () => setAlertState({ open: false });
 
+  const setStateWrapper =
+    (severity, timeout = 5000) =>
+    (title, message) =>
+      setAlertState({ open: true, title, message, severity, timeout });
   return (
     <AlertContext.Provider
       value={{
-        alertError: (title, message) => {
-          setAlertState({ open: true, title, message, severity: 'error' });
-        },
-        alertInfo: (title, message) => {
-          setAlertState({ open: true, title, message, severity: 'info' });
-        },
-        alertWarning: (title, message) => {
-          setAlertState({ open: true, title, message, severity: 'warning' });
-        },
-        alertSuccess: (title, message) => {
-          setAlertState({ open: true, title, message, severity: 'success' });
-        },
+        alertError: setStateWrapper('error'),
+        alertInfo: setStateWrapper('info'),
+        alertWarning: setStateWrapper('warning'),
+        alertSuccess: setStateWrapper('success', 2000),
       }}
     >
       <Snackbar
         open={alertState.open}
-        autoHideDuration={5000}
+        autoHideDuration={alertState.timeout}
         onClose={handleClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
