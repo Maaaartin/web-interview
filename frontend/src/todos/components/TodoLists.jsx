@@ -18,7 +18,7 @@ import AlertContext from '../../Alert';
 export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
   const [activeList, setActiveList] = useState();
-  const { showAlert } = useContext(AlertContext);
+  const { alertError } = useContext(AlertContext);
 
   const handleAddTodo = async () => {
     try {
@@ -30,7 +30,7 @@ export const TodoLists = ({ style }) => {
         [activeList]: { ...todoLists[activeList], todos: updatedTodos },
       });
     } catch (e) {
-      showAlert(e.message);
+      alertError('Failed to add new TODO', e.message);
     }
   };
 
