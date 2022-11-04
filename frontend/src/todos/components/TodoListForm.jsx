@@ -9,23 +9,30 @@ import { useRef } from 'react';
 export const TodoListForm = ({ todoList, saveTodoList, onAddTodo }) => {
   const [todos, setTodos] = useState(todoList.todos);
   const isFirstRun = useRef(true);
+  const saveTodoRef = useRef(
+    _.debounce(() => {
+      saveTodoList(todoList.id, { todos });
+    }, 5000)
+  );
   useEffect(() => {
     setTodos(todoList.todos);
   }, [todoList.todos]);
-
-  const saveTodosDebound = useRef(
-    _.debounce(() => {
-      saveTodoList(todoList.id, { todos });
-    }, 1000)
-  );
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       return;
     }
 
-    saveTodosDebound.current?.();
+    saveTodoRef.current?.();
   }, [todos]);
+  // destructor
+  useEffect(
+    () => () => {
+      isFirstRun.current = null;
+      saveTodoRef.current?.cancel();
+    },
+    []
+  );
   const handleSubmit = (event) => {
     event.preventDefault();
     saveTodoList(todoList.id, { todos });
