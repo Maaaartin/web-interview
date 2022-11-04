@@ -4,11 +4,20 @@ const fs = require('fs/promises'),
 
 const BASE_PATH = Path.join(__dirname, '..', '..', '.data');
 
-// TODO handle file creation
 class BaseModel {
   static dataFile = null;
+  static initialized = false;
   values_ = null;
   id = null;
+
+  static async initialize() {
+    try {
+      await fs.access(BASE_PATH);
+      this.initialized = true;
+    } catch (_e) {
+      await fs.mkdir(BASE_PATH);
+    }
+  }
 
   /**
    * Reads json file and parses the output
@@ -16,6 +25,9 @@ class BaseModel {
    */
   static async readAndParse() {
     try {
+      if (!this.initialized) {
+        await this.initialize();
+      }
       const data = await fs.readFile(Path.join(BASE_PATH, this.dataFile), { encoding: 'utf-8' });
       return JSON.parse(data);
     } catch (e) {
