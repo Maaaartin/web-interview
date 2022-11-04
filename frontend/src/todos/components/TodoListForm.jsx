@@ -3,25 +3,11 @@ import { TextField, Card, CardContent, CardActions, Button, Typography } from '@
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import _ from 'lodash';
-
-const getTodoDebouncer = () => {
-  let action_ = null;
-  const debounce = _.debounce(() => {
-    action_?.();
-  }, 1000);
-  return Object.freeze({
-    exec: (action) => {
-      action_ = action;
-      return debounce();
-    },
-    cancel: debounce.cancel,
-  });
-};
+import Debounce from '../../Debounce';
 
 export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }) => {
   const [todos, setTodos] = useState(todoList.todos);
-  const isFirstRun = useRef(true);
-  const updateTodoRef = useRef(getTodoDebouncer());
+  const todoDebounce = useRef(Debounce());
 
   useEffect(() => {
     setTodos(todoList.todos);
@@ -30,8 +16,7 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }
   // destructor
   useEffect(
     () => () => {
-      isFirstRun.current = null;
-      updateTodoRef.current?.cancel();
+      todoDebounce.current?.cancel();
     },
     []
   );
@@ -44,7 +29,7 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }
   const onInputChange = (event, index) => {
     const updatedTodos = _.set(_.clone(todos), `[${index}].title`, event.target.value);
     setTodos(updatedTodos);
-    updateTodoRef.current?.exec(() => onUpdateTodo(_.clone(updatedTodos[index])));
+    todoDebounce.current?.exec(() => onUpdateTodo(_.clone(updatedTodos[index])));
   };
 
   return (
