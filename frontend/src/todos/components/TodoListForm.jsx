@@ -4,12 +4,28 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { useEffect } from 'react';
 import _ from 'lodash';
+import { useRef } from 'react';
 
 export const TodoListForm = ({ todoList, saveTodoList, onAddTodo }) => {
   const [todos, setTodos] = useState(todoList.todos);
+  const isFirstRun = useRef(true);
   useEffect(() => {
     setTodos(todoList.todos);
   }, [todoList.todos]);
+
+  const saveTodosDebound = useRef(
+    _.debounce(() => {
+      saveTodoList(todoList.id, { todos });
+    }, 1000)
+  );
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+
+    saveTodosDebound.current?.();
+  }, [todos]);
   const handleSubmit = (event) => {
     event.preventDefault();
     saveTodoList(todoList.id, { todos });
@@ -54,7 +70,6 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo }) => {
               color='primary'
               onClick={() => {
                 onAddTodo();
-                // setTodos([...todos, '']);
               }}
             >
               Add Todo <AddIcon />

@@ -76,6 +76,7 @@ export const TodoLists = ({ style }) => {
           todoList={todoLists[activeList]}
           saveTodoList={(id, { todos }) => {
             const listToUpdate = todoLists[id];
+
             setTodoLists({
               ...todoLists,
               [id]: { ...listToUpdate, todos },
