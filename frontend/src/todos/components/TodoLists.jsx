@@ -15,7 +15,8 @@ import {
   fetchTodoLists,
   fetchTodosForList,
   createTodo,
-  updateTodoList,
+  // updateTodoList,
+  deleteTodo,
   updateTodo,
 } from '../../api.js';
 import { useContext } from 'react';
@@ -50,21 +51,35 @@ export const TodoLists = ({ style }) => {
     }
   };
 
-  const handleSaveList = async (id, { todos }) => {
-    const listToUpdate = todoLists[id];
-    const updatedLists = {
-      ...todoLists,
-      [id]: { ...listToUpdate, todos },
-    };
-    alertInfo('Saving changes...');
+  const handleRemoveTodo = async (todo) => {
     try {
-      await updateTodoList(updatedLists[id]);
-      setTodoLists(updatedLists);
-      alertSuccess('Changes saved');
+      await deleteTodo(todo.id);
+      const updatedTodos = await fetchTodosForList(activeList);
+
+      setTodoLists({
+        ...todoLists,
+        [activeList]: { ...todoLists[activeList], todos: updatedTodos },
+      });
     } catch (e) {
-      alertError('Failed to save list', e.message);
+      alertError('Failed to save changes', e.message);
     }
   };
+
+  // const handleSaveList = async (id, { todos }) => {
+  //   const listToUpdate = todoLists[id];
+  //   const updatedLists = {
+  //     ...todoLists,
+  //     [id]: { ...listToUpdate, todos },
+  //   };
+  //   alertInfo('Saving changes...');
+  //   try {
+  //     await updateTodoList(updatedLists[id]);
+  //     setTodoLists(updatedLists);
+  //     alertSuccess('Changes saved');
+  //   } catch (e) {
+  //     alertError('Failed to save list', e.message);
+  //   }
+  // };
 
   useEffect(() => {
     (async () => {
@@ -106,9 +121,10 @@ export const TodoLists = ({ style }) => {
         <TodoListForm
           key={activeList} // use key to make React recreate component to reset internal state
           todoList={todoLists[activeList]}
-          saveTodoList={handleSaveList}
+          // saveTodoList={handleSaveList}
           onAddTodo={handleAddTodo}
           onUpdateTodo={handleUpdateTodo}
+          onRemoveTodo={handleRemoveTodo}
         />
       )}
     </Fragment>

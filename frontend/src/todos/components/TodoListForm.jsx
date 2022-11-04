@@ -5,7 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import _ from 'lodash';
 import Debounce from '../../Debounce';
 
-export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }) => {
+export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo, onRemoveTodo }) => {
   const [todos, setTodos] = useState(todoList.todos);
   const todoDebounce = useRef(Debounce());
 
@@ -20,11 +20,6 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }
     },
     []
   );
-  // TODO remove this?
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    saveTodoList(todoList.id, { todos });
-  };
 
   const onInputChange = (event, index) => {
     const updatedTodos = _.set(_.clone(todos), `[${index}].title`, event.target.value);
@@ -36,10 +31,7 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }
     <Card sx={{ margin: '0 1rem' }}>
       <CardContent>
         <Typography component='h2'>{todoList.title}</Typography>
-        <form
-          onSubmit={handleSubmit}
-          style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
-        >
+        <form style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
           {todos.map((todo, index) => (
             <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
               <Typography sx={{ margin: '8px' }} variant='h6'>
@@ -57,6 +49,7 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }
                 color='secondary'
                 onClick={() => {
                   setTodos(todos.filter((_t, i) => i !== index));
+                  onRemoveTodo(todo);
                 }}
               >
                 <DeleteIcon />
@@ -66,9 +59,6 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo }
           <CardActions>
             <Button type='button' color='primary' onClick={onAddTodo}>
               Add Todo <AddIcon />
-            </Button>
-            <Button type='submit' variant='contained' color='primary'>
-              Save
             </Button>
           </CardActions>
         </form>

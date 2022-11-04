@@ -52,8 +52,20 @@ class BaseModel {
     }
     return null;
   }
+
   static getAll() {
     return this.readAndParse();
+  }
+
+  static async deleteById(id) {
+    const data = await this.readAndParse();
+    if (data[id]) {
+      const value = { ...data[id] };
+      delete data[id];
+      await this.write(data);
+      return value;
+    }
+    return null;
   }
 
   constructor(props = {}) {
