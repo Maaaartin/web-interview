@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TextField, Card, CardContent, CardActions, Button, Typography } from '@mui/material';
+import {
+  TextField,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Typography,
+  Checkbox,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import _ from 'lodash';
@@ -21,8 +29,8 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo, 
     []
   );
 
-  const onInputChange = (event, index) => {
-    const updatedTodos = _.set(_.clone(todos), `[${index}].title`, event.target.value);
+  const onTodoChange = (index, prop, value) => {
+    const updatedTodos = _.set(_.clone(todos), `[${index}].${prop}`, value);
     setTodos(updatedTodos);
     todoDebounce.current?.exec(() => onUpdateTodo(_.clone(updatedTodos[index])));
   };
@@ -41,7 +49,12 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo, 
                 sx={{ flexGrow: 1, marginTop: '1rem' }}
                 label='What to do?'
                 value={todo.title || ''}
-                onChange={(event) => onInputChange(event, index)}
+                onChange={(event) => onTodoChange(index, 'title', event.target.value)}
+              />
+              <Checkbox
+                checked={!!todo.checked}
+                value={!!todo.checked}
+                onChange={() => onTodoChange(index, 'checked', !todos[index].checked)}
               />
               <Button
                 sx={{ margin: '8px' }}
