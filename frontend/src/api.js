@@ -13,7 +13,7 @@ export class HttpError extends Error {
 /**
  *
  * @param {import('axios').AxiosRequestConfig} config
- * @returns {any} data
+ * @returns {Promise<any>} data
  */
 const makeRequest = async (config) => {
   try {
@@ -55,14 +55,6 @@ export const createTodo = (listId) => {
 
 export const updateTodo = (todo) => {
   return makeRequest({ url: BASE_URL.concat('/api/todo/', todo.id), method: 'PUT', data: todo });
-};
-
-export const updateTodoList = (tdList) => {
-  return makeRequest({
-    url: BASE_URL.concat('/api/list/', tdList.id),
-    method: 'PUT',
-    data: tdList,
-  });
 };
 
 export const deleteTodo = (todoId) => {

@@ -9,8 +9,6 @@ import {
   ListItemIcon,
   Typography,
   ButtonGroup,
-  CircularProgress,
-  Stack,
   Button,
   CardActions,
   ListItemButton,
@@ -25,7 +23,6 @@ import {
   fetchTodoLists,
   fetchTodosForList,
   createTodo,
-  // updateTodoList,
   deleteTodoList,
   deleteTodo,
   createTodoList,
@@ -36,23 +33,31 @@ import AlertContext from '../../Alert';
 
 export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
-  const [activeList, setActiveList] = useState();
+  const [activeList, setActiveList] = useState(null);
   const [newListName, setNewListName] = useState(null);
   const { alertError, alertInfo, alertSuccess } = useContext(AlertContext);
 
-  const handleAddTodo = async () => {
+  const updateTodosForList = async (action, errorTitle) => {
     try {
-      await createTodo(activeList);
+      await action();
       const updatedTodos = await fetchTodosForList(activeList);
 
-      setTodoLists({
-        ...todoLists,
-        [activeList]: { ...todoLists[activeList], todos: updatedTodos },
-      });
+      setTodoLists(
+        _.set(
+          _.clone(todoLists),
+          activeList,
+          _.set(_.clone(todoLists[activeList]), 'todos', updatedTodos)
+        )
+      );
     } catch (e) {
-      alertError('Failed to add new TODO', e.message);
+      alertError(errorTitle, e.message);
     }
   };
+  const handleAddTodo = () =>
+    updateTodosForList(() => createTodo(activeList), 'Failed to add new TODO');
+
+  const handleRemoveTodo = (todo) =>
+    updateTodosForList(() => deleteTodo(todo.id), 'Failed to save changes');
 
   const handleUpdateTodo = async (todo) => {
     try {
@@ -64,49 +69,28 @@ export const TodoLists = ({ style }) => {
     }
   };
 
-  const handleRemoveTodo = async (todo) => {
-    try {
-      await deleteTodo(todo.id);
-      const updatedTodos = await fetchTodosForList(activeList);
-
-      setTodoLists({
-        ...todoLists,
-        [activeList]: { ...todoLists[activeList], todos: updatedTodos },
-      });
-    } catch (e) {
-      alertError('Failed to save changes', e.message);
-    }
-  };
-
   const handleCreateList = async () => {
     try {
       setNewListName(null);
       const createdList = await createTodoList(newListName);
-      setTodoLists({
-        ...todoLists,
-        [createdList.id]: { ...createdList, todos: [] },
-      });
+      setTodoLists(_.set(_.clone(todoLists), createdList.id, _.extend(createdList, { todos: [] })));
       setActiveList(createdList.id);
     } catch (e) {
       alertError('Failed create new list', e.message);
     }
   };
 
-  // const handleSaveList = async (id, { todos }) => {
-  //   const listToUpdate = todoLists[id];
-  //   const updatedLists = {
-  //     ...todoLists,
-  //     [id]: { ...listToUpdate, todos },
-  //   };
-  //   alertInfo('Saving changes...');
-  //   try {
-  //     await updateTodoList(updatedLists[id]);
-  //     setTodoLists(updatedLists);
-  //     alertSuccess('Changes saved');
-  //   } catch (e) {
-  //     alertError('Failed to save list', e.message);
-  //   }
-  // };
+  const handleDeleteList = async (listId) => {
+    try {
+      await deleteTodoList(listId);
+      setTodoLists(_.omit(_.clone(todoLists), listId));
+      if (activeList === listId) {
+        setActiveList(null);
+      }
+    } catch (e) {
+      alertError('Failed to delete list', e.message);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -128,14 +112,6 @@ export const TodoLists = ({ style }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (_.isEmpty(todoLists)) {
-    return (
-      <Stack alignItems='center'>
-        <CircularProgress />
-      </Stack>
-    );
-  }
-
   return (
     <Fragment>
       <Card style={style}>
@@ -146,26 +122,28 @@ export const TodoLists = ({ style }) => {
               Add List <AddIcon />
             </Button>
           </CardActions>
-          <List>
-            {Object.entries(todoLists).map(([key, { title }]) => (
-              <ListItem key={key} button onClick={() => setActiveList(key)}>
-                <ListItemIcon>
-                  <ReceiptIcon />
-                </ListItemIcon>
-                <ListItemText primary={title} />
-                <ListItemButton
-                  style={{ flex: 'revert' }}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    // TODO update on frontend
-                    deleteTodoList(key);
-                  }}
-                >
-                  <DeleteIcon color='secondary' />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+          {!_.isEmpty(todoLists) && (
+            <List>
+              {Object.entries(todoLists).map(([key, { title }]) => (
+                <ListItem key={key} button onClick={() => setActiveList(key)}>
+                  <ListItemIcon>
+                    <ReceiptIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={title} />
+                  <ListItemButton
+                    style={{ flex: 'revert' }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+
+                      handleDeleteList(key);
+                    }}
+                  >
+                    <DeleteIcon color='secondary' />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          )}
 
           {newListName !== null && (
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -206,7 +184,6 @@ export const TodoLists = ({ style }) => {
         <TodoListForm
           key={activeList} // use key to make React recreate component to reset internal state
           todoList={todoLists[activeList]}
-          // saveTodoList={handleSaveList}
           onAddTodo={handleAddTodo}
           onUpdateTodo={handleUpdateTodo}
           onRemoveTodo={handleRemoveTodo}
