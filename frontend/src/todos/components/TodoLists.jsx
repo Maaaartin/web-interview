@@ -61,6 +61,17 @@ export const TodoLists = ({ style }) => {
 
   const handleUpdateTodo = async (todo) => {
     try {
+      const updateDoneStatus = (doneValue) => {
+        setTodoLists(
+          _.set(
+            _.clone(todoLists),
+            todo.listId,
+            _.set(_.clone(todoLists[activeList]), 'done', doneValue)
+          )
+        );
+      };
+
+      updateDoneStatus(todoLists[todo.listId].todos.every((td) => td.checked));
       alertInfo('Saving changes...');
       await updateTodo(todo);
       alertSuccess('Changes saved');
@@ -98,7 +109,9 @@ export const TodoLists = ({ style }) => {
         const lists = await fetchTodoLists();
         const allTodos = await Promise.all(
           Object.values(lists).map(async (td) => {
-            return { ...td, todos: await fetchTodosForList(td.id) };
+            const todos = await fetchTodosForList(td.id);
+            const done = todos.every((td_) => td_.checked);
+            return { ...td, todos, done };
           })
         );
 
@@ -124,17 +137,17 @@ export const TodoLists = ({ style }) => {
           </CardActions>
           {!_.isEmpty(todoLists) && (
             <List>
-              {Object.entries(todoLists).map(([key, { title }]) => (
+              {Object.entries(todoLists).map(([key, { title, done }]) => (
                 <ListItem key={key} button onClick={() => setActiveList(key)}>
                   <ListItemIcon>
                     <ReceiptIcon />
                   </ListItemIcon>
                   <ListItemText primary={title} />
+                  <ListItemText primary={String(!!done)} />
                   <ListItemButton
                     style={{ flex: 'revert' }}
                     onClick={(event) => {
                       event.stopPropagation();
-
                       handleDeleteList(key);
                     }}
                   >

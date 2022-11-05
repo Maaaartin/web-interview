@@ -13,7 +13,7 @@ import AddIcon from '@mui/icons-material/Add';
 import _ from 'lodash';
 import Debounce from '../../Debounce';
 
-export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo, onRemoveTodo }) => {
+export const TodoListForm = ({ todoList, onAddTodo, onUpdateTodo, onRemoveTodo }) => {
   const [todos, setTodos] = useState(todoList.todos);
   const todoDebounce = useRef(Debounce());
 
@@ -29,10 +29,14 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo, 
     []
   );
 
-  const onTodoChange = (index, prop, value) => {
+  const onTodoChange = (index, prop, value, debounce = true) => {
     const updatedTodos = _.set(_.clone(todos), `[${index}].${prop}`, value);
     setTodos(updatedTodos);
-    todoDebounce.current?.exec(() => onUpdateTodo(_.clone(updatedTodos[index])));
+    const action = () => onUpdateTodo(_.clone(updatedTodos[index]));
+    if (debounce) {
+      return todoDebounce.current?.exec(action);
+    }
+    action();
   };
 
   return (
@@ -54,7 +58,7 @@ export const TodoListForm = ({ todoList, saveTodoList, onAddTodo, onUpdateTodo, 
               <Checkbox
                 checked={!!todo.checked}
                 value={!!todo.checked}
-                onChange={() => onTodoChange(index, 'checked', !todos[index].checked)}
+                onChange={() => onTodoChange(index, 'checked', !todos[index].checked, false)}
               />
               <Button
                 sx={{ margin: '8px' }}
