@@ -17,6 +17,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckIcon from '@mui/icons-material/Check';
 import { TodoListForm } from './TodoListForm';
 import _ from 'lodash';
 import {
@@ -143,7 +144,11 @@ export const TodoLists = ({ style }) => {
                     <ReceiptIcon />
                   </ListItemIcon>
                   <ListItemText primary={title} />
-                  <ListItemText primary={String(!!done)} />
+                  {done && (
+                    <ListItemIcon>
+                      <CheckIcon color='primary' />
+                    </ListItemIcon>
+                  )}
                   <ListItemButton
                     style={{ flex: 'revert' }}
                     onClick={(event) => {
