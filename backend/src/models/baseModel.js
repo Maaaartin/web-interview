@@ -71,7 +71,7 @@ class BaseModel {
   constructor(props = {}) {
     const id = props.id || crypto.randomUUID();
     this.id = id;
-    this.values_ = { ...this.defaultValues, ...props };
+    this.values_ = { ...this.defaultValues, id, ...props };
   }
 
   set values(v) {

@@ -86,6 +86,7 @@ export const TodoLists = ({ style }) => {
         ...todoLists,
         [createdList.id]: { ...createdList, todos: [] },
       });
+      setActiveList(createdList.id);
     } catch (e) {
       alertError('Failed create new list', e.message);
     }
@@ -155,7 +156,6 @@ export const TodoLists = ({ style }) => {
                 <ListItemButton
                   style={{ flex: 'revert' }}
                   onClick={(event) => {
-                    console.log('click');
                     event.stopPropagation();
                     // TODO update on frontend
                     deleteTodoList(key);

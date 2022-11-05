@@ -31,9 +31,12 @@ module.exports = () => {
   router.delete('/:listId', async (req, res) => {
     try {
       const { listId } = req.params;
-      await TodoList.deleteById(listId);
-      const deleted = await Todo.deleteByListId(listId);
-      res.json(deleted);
+      const [deletedList] = await Promise.all([
+        TodoList.deleteById(listId),
+        Todo.deleteByListId(listId),
+      ]);
+
+      res.json(deletedList);
     } catch (e) {
       res.status(500).send(e.message);
     }
