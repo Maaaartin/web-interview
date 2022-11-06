@@ -20,6 +20,8 @@ const makeRequest = async (config) => {
     const { data } = await Axios(config);
     return data;
   } catch (e) {
+    // Possibility to add logging from frontend
+    // Log.error(e)
     if (Axios.isAxiosError(e)) {
       // expects e.response.data === typeof 'string'
       throw new HttpError(e.response?.data || e.message, e.response?.status);
