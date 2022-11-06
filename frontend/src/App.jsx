@@ -1,8 +1,7 @@
 import React from 'react';
-import { useState } from 'react';
-import { AppBar, Toolbar, Typography, Alert, Snackbar, AlertTitle } from '@mui/material';
+import { AppBar, Toolbar, Typography } from '@mui/material';
 import { TodoLists } from './todos/components/TodoLists';
-import AlertContext from './Alert';
+import { AlertContextProvider } from './Alert';
 
 const MainAppBar = () => {
   return (
@@ -26,40 +25,15 @@ const contentWrapperStyle = {
 };
 
 const MainWrapper = ({ children }) => {
-  const [alertState, setAlertState] = useState({ open: false });
-  const handleClose = () => setAlertState({ open: false });
-
-  const setStateWrapper =
-    (severity, timeout = 5000) =>
-    (title, message) =>
-      setAlertState({ open: true, title, message, severity, timeout });
   return (
-    <AlertContext.Provider
-      value={{
-        alertError: setStateWrapper('error'),
-        alertInfo: setStateWrapper('info'),
-        alertWarning: setStateWrapper('warning'),
-        alertSuccess: setStateWrapper('success', 2000),
-      }}
-    >
-      <Snackbar
-        open={alertState.open}
-        autoHideDuration={alertState.timeout}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert onClose={handleClose} severity={alertState.severity}>
-          <AlertTitle>{alertState.title}</AlertTitle>
-          {alertState.message}
-        </Alert>
-      </Snackbar>
+    <AlertContextProvider>
       <div style={mainWrapperStyle}>
         <MainAppBar />
         <div style={centerContentWrapper}>
           <div style={contentWrapperStyle}>{children}</div>
         </div>
       </div>
-    </AlertContext.Provider>
+    </AlertContextProvider>
   );
 };
 

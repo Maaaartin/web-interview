@@ -30,7 +30,7 @@ import {
   updateTodo,
 } from '../../api.js';
 import { useContext } from 'react';
-import AlertContext from '../../Alert';
+import { AlertContext } from '../../Alert';
 
 export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
