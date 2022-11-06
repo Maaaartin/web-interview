@@ -21,6 +21,7 @@ const makeRequest = async (config) => {
     return data;
   } catch (e) {
     if (Axios.isAxiosError(e)) {
+      // expects e.response.data === typeof 'string'
       throw new HttpError(e.response?.data || e.message, e.response?.status);
     }
     if (e instanceof Error) {
