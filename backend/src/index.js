@@ -7,6 +7,7 @@ app.use(express.json());
 
 const PORT = 3001;
 
+// Registering routes
 app.use('/api/list', require('./routes/list.js')());
 app.use('/api/todo', require('./routes/todo.js')());
 

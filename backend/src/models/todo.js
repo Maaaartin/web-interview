@@ -1,5 +1,9 @@
 const BaseModel = require('./baseModel');
 
+/**
+ * Model for Todo data
+ * Expect a todo to be linked to one list
+ */
 class Todo extends BaseModel {
   static dataFile = 'todo.json';
 

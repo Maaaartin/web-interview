@@ -6,6 +6,9 @@ const BASE_PATH = Path.join(__dirname, '..', '..', '.data');
 
 const cloneDeep = (data) => JSON.parse(JSON.stringify(data));
 
+/**
+ * Mongo-like class for handling data changes
+ */
 class BaseModel {
   static dataFile = null;
   static initialized = false;
