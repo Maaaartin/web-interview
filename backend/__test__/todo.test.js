@@ -55,4 +55,17 @@ describe('Todo model tests', () => {
     const savedTodo = await Todo.getById('id');
     expect(savedTodo).toBe(null);
   });
+
+  test('Delete by id', async () => {
+    const todo = await new Todo().save();
+    const deleted = await Todo.deleteById(todo.id);
+    expect(deleted).toEqual(todo.values);
+    const allTodos = await Todo.getAll();
+    expect(Object.keys(allTodos)).toHaveLength(0);
+  });
+
+  test('Delete by id - non existing record', async () => {
+    const deleted = await Todo.deleteById('id');
+    expect(deleted).toBe(null);
+  });
 });
