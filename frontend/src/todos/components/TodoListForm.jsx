@@ -13,12 +13,7 @@ export const TodoListForm = ({ todoList, onAddTodo, onUpdateTodo, onRemoveTodo }
   }, [todoList.todos]);
 
   // destructor
-  useEffect(
-    () => () => {
-      todoDebounce.current?.cancel();
-    },
-    []
-  );
+  useEffect(() => () => todoDebounce.current?.cancel(), []);
 
   const handleTodoChange = (index, prop, value, debounce = true) => {
     const updatedTodos = _.set(_.clone(todos), `[${index}].${prop}`, value);
