@@ -36,7 +36,7 @@ export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
   const [activeList, setActiveList] = useState(null);
   const [newListName, setNewListName] = useState(null);
-  const { alertError, alertInfo, alertSuccess } = useContext(AlertContext);
+  const { alertError, alertInfo, alertSuccess, alertWarning } = useContext(AlertContext);
 
   const updateTodosForList = async (action, errorTitle) => {
     try {
@@ -104,20 +104,43 @@ export const TodoLists = ({ style }) => {
     }
   };
 
+  const checkDueTodos = (listsWithTodos) => {
+    const dueTodos = listsWithTodos
+      .map((l) => l.todos)
+      .flat()
+      .filter((td) => !td.checked && td.isDue);
+
+    switch (dueTodos.length) {
+      case 0:
+        return;
+      case 1:
+        const { title, due } = dueTodos[0];
+        return alertWarning(
+          'One task is overdue',
+          `${title} was supposed to be done ${new Date(due).toLocaleString()}`
+        );
+      default:
+        return alertWarning(
+          'Multiple tasks are overdue',
+          `Overdue tasks: ${dueTodos.map((td) => td.title).join(', ')}`
+        );
+    }
+  };
+
   useEffect(() => {
     (async () => {
       try {
         const lists = await fetchTodoLists();
-        const allTodos = await Promise.all(
+        const listsWithTodos = await Promise.all(
           Object.values(lists).map(async (td) => {
             const todos = await fetchTodosForList(td.id);
             const done = todos.every((td_) => td_.checked);
             return { ...td, todos, done };
           })
         );
-
-        const todoList = allTodos.reduce((obj, item) => ({ ...obj, [item.id]: item }), {});
-        setTodoLists(todoList);
+        checkDueTodos(listsWithTodos);
+        const todoMap = listsWithTodos.reduce((obj, item) => ({ ...obj, [item.id]: item }), {});
+        setTodoLists(todoMap);
       } catch (e) {
         alertError('Failed to fetch data', e.message);
       }

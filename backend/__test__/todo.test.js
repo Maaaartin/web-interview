@@ -13,16 +13,40 @@ describe('Todo model tests', () => {
 
   test('Create new todo with default values', async () => {
     const todo = await new Todo().save();
-    expect(todo.values).toEqual({ id: todo.id, listId: null, title: null, checked: false });
+    expect(todo.values).toEqual({
+      id: todo.id,
+      listId: null,
+      title: null,
+      checked: false,
+      due: null,
+    });
   });
 
   test('Create new todo with passed values', async () => {
-    const todo = await new Todo({ listId: 'listId', title: 'title', checked: true }).save();
-    expect(todo.values).toEqual({ id: todo.id, listId: 'listId', title: 'title', checked: true });
+    const now = new Date().toISOString();
+    const todo = await new Todo({
+      listId: 'listId',
+      title: 'title',
+      checked: true,
+      due: now,
+    }).save();
+    expect(todo.values).toEqual({
+      id: todo.id,
+      listId: 'listId',
+      title: 'title',
+      checked: true,
+      due: now,
+    });
   });
 
   test('Get all todos', async () => {
-    const todo = await new Todo({ listId: 'listId', title: 'title', checked: true }).save();
+    const now = new Date();
+    const todo = await new Todo({
+      listId: 'listId',
+      title: 'title',
+      checked: true,
+      due: now,
+    }).save();
     const allTodos = await Todo.getAll();
     expect(Object.keys(allTodos)).toHaveLength(1);
     expect(allTodos[todo.id]).toEqual({
@@ -30,6 +54,7 @@ describe('Todo model tests', () => {
       listId: 'listId',
       title: 'title',
       checked: true,
+      due: now.toISOString(),
     });
   });
 

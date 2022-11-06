@@ -29,7 +29,7 @@ class Todo extends BaseModel {
   }
 
   get defaultValues() {
-    return { title: null, listId: null, checked: false };
+    return { title: null, listId: null, checked: false, due: null };
   }
 }
 

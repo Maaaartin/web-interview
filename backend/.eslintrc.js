@@ -14,4 +14,5 @@ module.exports = {
     ecmaVersion: 2022,
   },
   rules: {},
+  plugins: ['jest'],
 };

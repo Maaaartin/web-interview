@@ -7,11 +7,13 @@ module.exports = () => {
   router.get('/:listId', async (req, res) => {
     const { listId } = req.params;
     try {
-      const list = await Todo.findByListId(listId);
-      if (!list) {
+      const todos = await Todo.findByListId(listId);
+      if (!todos) {
         return res.status(404).send(`List with id ${listId} not found`);
       }
-      res.json(list);
+      const now = new Date();
+      const todosWithDue = todos.map((td) => ({ ...td, isDue: td.due && new Date(td.due) < now }));
+      res.json(todosWithDue);
     } catch (e) {
       Logger.error(`Failed to fetch todo for list ${listId}`, e);
       res.status(500).send(e.message);
