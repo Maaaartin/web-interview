@@ -180,11 +180,7 @@ export const TodoLists = ({ style }) => {
             </List>
           )}
 
-          <form
-            style={{ display: 'flex', alignItems: 'center' }}
-            onSubmit={handleCreateList}
-            onInvalid={console.log}
-          >
+          <form style={{ display: 'flex', alignItems: 'center' }} onSubmit={handleCreateList}>
             <TextField
               autoFocus
               sx={{ flexGrow: 1, marginTop: '1rem' }}
