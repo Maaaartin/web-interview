@@ -32,6 +32,8 @@ export const TodoListForm = ({ todoList, onAddTodo, onUpdateTodo, onRemoveTodo }
   };
 
   const handleRemoveTodo = (todo, index) => {
+    // cancels pending update requests
+    todoDebounce.current?.cancel();
     setTodos(todos.filter((_t, i) => i !== index));
     onRemoveTodo(todo);
   };
