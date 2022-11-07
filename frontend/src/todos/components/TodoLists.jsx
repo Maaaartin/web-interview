@@ -31,6 +31,7 @@ import {
 import { useContext } from 'react';
 import { AlertContext } from '../../Alert';
 
+const allTodosDone = (todos) => !_.isEmpty(todos) && todos.every((td) => td.checked);
 export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
   const [activeList, setActiveList] = useState(null);
@@ -42,36 +43,32 @@ export const TodoLists = ({ style }) => {
       await action();
       const updatedTodos = await fetchTodosForList(activeList);
 
-      setTodoLists(
-        _.set(
-          _.clone(todoLists),
-          activeList,
-          _.set(_.clone(todoLists[activeList]), 'todos', updatedTodos)
-        )
-      );
+      setTodoLists({
+        ...todoLists,
+        [activeList]: {
+          ...todoLists[activeList],
+          todos: updatedTodos,
+          done: allTodosDone(updatedTodos),
+        },
+      });
     } catch (e) {
       alertError(errorTitle, e.message);
     }
   };
-  const handleAddTodo = (e) =>
+  const handleAddTodo = () =>
     updateTodosForList(() => createTodo(activeList), 'Failed to add new Todo');
 
   const handleRemoveTodo = (todo) =>
     updateTodosForList(() => deleteTodo(todo.id), 'Failed to save changes');
-
   const handleUpdateTodo = async (todo) => {
     try {
-      const updateDoneStatus = (doneValue) => {
-        setTodoLists(
-          _.set(
-            _.clone(todoLists),
-            todo.listId,
-            _.set(_.clone(todoLists[activeList]), 'done', doneValue)
-          )
-        );
-      };
-
-      updateDoneStatus(todoLists[todo.listId].todos.every((td) => td.checked));
+      setTodoLists({
+        ...todoLists,
+        [activeList]: {
+          ...todoLists[activeList],
+          done: allTodosDone(todoLists[todo.listId].todos),
+        },
+      });
       alertInfo('Saving changes...');
       await updateTodo(todo);
       alertSuccess('Changes saved');
@@ -85,7 +82,7 @@ export const TodoLists = ({ style }) => {
       event.preventDefault();
       setNewListName('');
       const createdList = await createTodoList(newListName);
-      setTodoLists(_.set(_.clone(todoLists), createdList.id, _.extend(createdList, { todos: [] })));
+      setTodoLists({ ...todoLists, [createdList.id]: { ...createdList, todos: [] } });
       setActiveList(createdList.id);
     } catch (e) {
       alertError('Failed create new list', e.message);
@@ -134,7 +131,7 @@ export const TodoLists = ({ style }) => {
         const listsWithTodos = await Promise.all(
           Object.values(lists).map(async (td) => {
             const todos = await fetchTodosForList(td.id);
-            const done = !_.isEmpty(todos) && todos.every((td_) => td_.checked);
+            const done = allTodosDone(todos);
             return { ...td, todos, done };
           })
         );
