@@ -1,20 +1,15 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useContext } from 'react';
 import {
   Card,
   CardContent,
-  TextField,
   List,
   ListItem,
   ListItemText,
   ListItemIcon,
   Typography,
-  ButtonGroup,
-  Button,
   ListItemButton,
 } from '@mui/material';
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import AddIcon from '@mui/icons-material/Add';
-import ClearIcon from '@mui/icons-material/Clear';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import { TodoListForm } from './TodoListForm';
@@ -28,14 +23,13 @@ import {
   createTodoList,
   updateTodo,
 } from '../../api.js';
-import { useContext } from 'react';
 import { AlertContext } from '../../Alert';
+import { AddTodoListForm } from './AddListForm';
 
 const allTodosDone = (todos) => !_.isEmpty(todos) && todos.every((td) => td.checked);
 export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
   const [activeList, setActiveList] = useState(null);
-  const [newListName, setNewListName] = useState('');
   const { alertError, alertInfo, alertSuccess, alertWarning } = useContext(AlertContext);
 
   const updateTodosForList = async (action, errorTitle) => {
@@ -77,11 +71,9 @@ export const TodoLists = ({ style }) => {
     }
   };
 
-  const handleCreateList = async (event) => {
+  const handleCreateList = async (listName) => {
     try {
-      event.preventDefault();
-      setNewListName('');
-      const createdList = await createTodoList(newListName);
+      const createdList = await createTodoList(listName);
       setTodoLists({ ...todoLists, [createdList.id]: { ...createdList, todos: [] } });
       setActiveList(createdList.id);
     } catch (e) {
@@ -179,42 +171,7 @@ export const TodoLists = ({ style }) => {
               ))}
             </List>
           )}
-
-          <form style={{ display: 'flex', alignItems: 'center' }} onSubmit={handleCreateList}>
-            <TextField
-              autoFocus
-              sx={{ flexGrow: 1, marginTop: '1rem' }}
-              label='What is the name of new list?'
-              value={newListName}
-              onChange={(event) => setNewListName(event.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <ButtonGroup variant='text'>
-                    <Button
-                      title='Reset'
-                      disabled={!newListName}
-                      sx={{ margin: '8px' }}
-                      size='small'
-                      color='secondary'
-                      onClick={() => setNewListName('')}
-                    >
-                      <ClearIcon />
-                    </Button>
-                    <Button
-                      title='Create'
-                      disabled={!newListName}
-                      type='submit'
-                      sx={{ margin: '8px' }}
-                      size='small'
-                      color='primary'
-                    >
-                      <AddIcon />
-                    </Button>
-                  </ButtonGroup>
-                ),
-              }}
-            />
-          </form>
+          <AddTodoListForm onCreateList={handleCreateList} />
         </CardContent>
       </Card>
       {todoLists[activeList] && (
