@@ -21,6 +21,11 @@ describe('TodoList model tests', () => {
     expect(todoList.values).toEqual({ id: todoList.id, title: 'title', todoIds: ['id'] });
   });
 
+  test('Exclude properties not present in default values', async () => {
+    const todoList = await new TodoList({ extra: 'value' }).save();
+    expect(todoList.values).toEqual({ id: todoList.id, todoIds: [], title: null });
+  });
+
   test('Get all todo lists', async () => {
     const todoList = await new TodoList({ title: 'title', todoIds: ['id'] }).save();
     const allLists = await TodoList.getAll();

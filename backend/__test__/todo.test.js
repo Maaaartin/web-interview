@@ -39,6 +39,17 @@ describe('Todo model tests', () => {
     });
   });
 
+  test('Exclude properties not present in default values', async () => {
+    const todo = await new Todo({ extra: 'value' }).save();
+    expect(todo.values).toEqual({
+      id: todo.id,
+      listId: null,
+      title: null,
+      checked: false,
+      due: null,
+    });
+  });
+
   test('Get all todos', async () => {
     const now = new Date();
     const todo = await new Todo({

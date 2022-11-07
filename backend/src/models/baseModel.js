@@ -96,10 +96,16 @@ class BaseModel {
     return {};
   }
 
+  getValidProps() {
+    const modelKeys = new Set(Object.keys(this.defaultValues)),
+      validValues = Object.entries(this.values).filter(([k]) => modelKeys.has(k));
+    return validValues.reduce((obj, [key, val]) => ({ ...obj, [key]: val }), { id: this.id });
+  }
+
   async save() {
     await this.constructor.initialize();
-    const valuesWithId = { ...this.values, id: this.id };
-    const newData = { ...this.constructor.data, [this.id]: valuesWithId };
+    this.values = this.getValidProps();
+    const newData = { ...this.constructor.data, [this.id]: this.values };
     this.constructor.data = newData;
     await this.constructor.write();
     return this;
