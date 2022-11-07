@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { TextField, Button, Typography, Checkbox, Grid } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -23,9 +23,6 @@ const GridItemNarrow = ({ children }) => {
 };
 
 export const Todo = ({ index, todo, onTodoChange, onRemoveTodo }) => {
-  useEffect(() => {
-    console.log(todo.title);
-  }, [todo.title]);
   return (
     <Grid
       container
