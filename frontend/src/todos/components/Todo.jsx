@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, Button, Typography, Checkbox, FormControlLabel, Grid } from '@mui/material';
+import { TextField, Button, Typography, Checkbox, Grid } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 
 const GridItemWide = ({ children }) => {
   return (
-    <Grid item xs={false} sm={5.5} md={9 / 2}>
+    <Grid item xs={10} md={4.5}>
       {children}
     </Grid>
   );
@@ -16,7 +16,7 @@ const GridItemWide = ({ children }) => {
 
 const GridItemNarrow = ({ children }) => {
   return (
-    <Grid item xs={false} sm={1} md={1}>
+    <Grid item xs={1} md={1}>
       {children}
     </Grid>
   );
@@ -24,7 +24,15 @@ const GridItemNarrow = ({ children }) => {
 
 export const Todo = ({ index, todo, onTodoChange, onRemoveTodo }) => {
   return (
-    <Grid container direction='row' justifyContent='left' alignItems='center'>
+    <Grid
+      container
+      direction='row'
+      justifyContent='left'
+      alignItems='center'
+      margin={2}
+      rowGap={2}
+      padding={2}
+    >
       <GridItemNarrow>
         <Typography variant='h6'>{index + 1}</Typography>
       </GridItemNarrow>
@@ -38,19 +46,15 @@ export const Todo = ({ index, todo, onTodoChange, onRemoveTodo }) => {
         />
       </GridItemWide>
       <GridItemNarrow>
-        <FormControlLabel
-          value='top'
-          control={
-            <Checkbox
-              checked={!!todo.checked}
-              value={!!todo.checked}
-              onChange={() => onTodoChange(index, 'checked', !todo.checked, false)}
-            />
-          }
-          label='Done'
-          labelPlacement='top'
+        <Checkbox
+          sx={{ width: '100%' }}
+          title='Done'
+          checked={!!todo.checked}
+          value={!!todo.checked}
+          onChange={() => onTodoChange(index, 'checked', !todo.checked, false)}
         />
       </GridItemNarrow>
+      <Grid item xs={1} md={'auto'} />
       <GridItemWide>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
@@ -63,7 +67,13 @@ export const Todo = ({ index, todo, onTodoChange, onRemoveTodo }) => {
         </LocalizationProvider>
       </GridItemWide>
       <GridItemNarrow>
-        <Button size='small' color='secondary' onClick={() => onRemoveTodo(todo, index)}>
+        <Button
+          sx={{ minWidth: '10px', width: '100%' }}
+          title='Delete'
+          size='small'
+          color='secondary'
+          onClick={() => onRemoveTodo(todo, index)}
+        >
           <DeleteIcon />
         </Button>
       </GridItemNarrow>
