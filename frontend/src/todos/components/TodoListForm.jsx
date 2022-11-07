@@ -15,9 +15,15 @@ export const TodoListForm = ({ todoList, onAddTodo, onUpdateTodo, onRemoveTodo }
   // destructor
   useEffect(() => () => todoDebounce.current?.cancel(), []);
 
+  const haveEmptyTitle = todos.some((td) => td.title === '');
+
   const handleTodoChange = (index, prop, value, debounce = true) => {
     const updatedTodos = _.set(_.clone(todos), `[${index}].${prop}`, value);
     setTodos(updatedTodos);
+    // do not update if title is empty
+    if (updatedTodos[index].title === '') {
+      return;
+    }
     const action = () => onUpdateTodo(_.clone(updatedTodos[index]));
     if (debounce) {
       return todoDebounce.current?.exec(action);
@@ -45,7 +51,7 @@ export const TodoListForm = ({ todoList, onAddTodo, onUpdateTodo, onRemoveTodo }
             />
           ))}
           <CardActions>
-            <Button type='button' color='primary' onClick={onAddTodo}>
+            <Button disabled={haveEmptyTitle} type='button' color='primary' onClick={onAddTodo}>
               Add Todo <AddIcon />
             </Button>
           </CardActions>

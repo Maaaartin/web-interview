@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TextField, Button, Typography, Checkbox, Grid } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -23,6 +23,9 @@ const GridItemNarrow = ({ children }) => {
 };
 
 export const Todo = ({ index, todo, onTodoChange, onRemoveTodo }) => {
+  useEffect(() => {
+    console.log(todo.title);
+  }, [todo.title]);
   return (
     <Grid
       container
@@ -38,6 +41,7 @@ export const Todo = ({ index, todo, onTodoChange, onRemoveTodo }) => {
       </GridItemNarrow>
       <GridItemWide>
         <TextField
+          error={todo.title === ''}
           autoFocus
           sx={{ width: '100%' }}
           label='What to do?'

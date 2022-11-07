@@ -10,7 +10,6 @@ import {
   Typography,
   ButtonGroup,
   Button,
-  CardActions,
   ListItemButton,
 } from '@mui/material';
 import ReceiptIcon from '@mui/icons-material/Receipt';
@@ -35,7 +34,7 @@ import { AlertContext } from '../../Alert';
 export const TodoLists = ({ style }) => {
   const [todoLists, setTodoLists] = useState({});
   const [activeList, setActiveList] = useState(null);
-  const [newListName, setNewListName] = useState(null);
+  const [newListName, setNewListName] = useState('');
   const { alertError, alertInfo, alertSuccess, alertWarning } = useContext(AlertContext);
 
   const updateTodosForList = async (action, errorTitle) => {
@@ -54,8 +53,8 @@ export const TodoLists = ({ style }) => {
       alertError(errorTitle, e.message);
     }
   };
-  const handleAddTodo = () =>
-    updateTodosForList(() => createTodo(activeList), 'Failed to add new TODO');
+  const handleAddTodo = (e) =>
+    updateTodosForList(() => createTodo(activeList), 'Failed to add new Todo');
 
   const handleRemoveTodo = (todo) =>
     updateTodosForList(() => deleteTodo(todo.id), 'Failed to save changes');
@@ -81,9 +80,10 @@ export const TodoLists = ({ style }) => {
     }
   };
 
-  const handleCreateList = async () => {
+  const handleCreateList = async (event) => {
     try {
-      setNewListName(null);
+      event.preventDefault();
+      setNewListName('');
       const createdList = await createTodoList(newListName);
       setTodoLists(_.set(_.clone(todoLists), createdList.id, _.extend(createdList, { todos: [] })));
       setActiveList(createdList.id);
@@ -134,7 +134,7 @@ export const TodoLists = ({ style }) => {
         const listsWithTodos = await Promise.all(
           Object.values(lists).map(async (td) => {
             const todos = await fetchTodosForList(td.id);
-            const done = todos.every((td_) => td_.checked);
+            const done = !_.isEmpty(todos) && todos.every((td_) => td_.checked);
             return { ...td, todos, done };
           })
         );
@@ -154,15 +154,11 @@ export const TodoLists = ({ style }) => {
       <Card style={style}>
         <CardContent>
           <Typography component='h2'>My Todo Lists</Typography>
-          <CardActions>
-            <Button type='button' color='primary' onClick={() => setNewListName('')}>
-              Add List <AddIcon />
-            </Button>
-          </CardActions>
+
           {!_.isEmpty(todoLists) && (
             <List>
               {Object.entries(todoLists).map(([key, { title, done }]) => (
-                <ListItem key={key} button onClick={() => setActiveList(key)}>
+                <ListItem title={title} key={key} button onClick={() => setActiveList(key)}>
                   <ListItemIcon>
                     <ReceiptIcon />
                   </ListItemIcon>
@@ -173,6 +169,7 @@ export const TodoLists = ({ style }) => {
                     </ListItemIcon>
                   )}
                   <ListItemButton
+                    title='Delete'
                     style={{ flex: 'revert' }}
                     onClick={(event) => {
                       event.stopPropagation();
@@ -186,39 +183,45 @@ export const TodoLists = ({ style }) => {
             </List>
           )}
 
-          {newListName !== null && (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <TextField
-                autoFocus
-                sx={{ flexGrow: 1, marginTop: '1rem' }}
-                label='List name'
-                value={newListName}
-                onChange={(event) => setNewListName(event.target.value)}
-                InputProps={{
-                  endAdornment: (
-                    <ButtonGroup variant='text'>
-                      <Button
-                        sx={{ margin: '8px' }}
-                        size='small'
-                        color='secondary'
-                        onClick={() => setNewListName(null)}
-                      >
-                        <ClearIcon />
-                      </Button>
-                      <Button
-                        sx={{ margin: '8px' }}
-                        size='small'
-                        color='primary'
-                        onClick={handleCreateList}
-                      >
-                        <AddIcon />
-                      </Button>
-                    </ButtonGroup>
-                  ),
-                }}
-              />
-            </div>
-          )}
+          <form
+            style={{ display: 'flex', alignItems: 'center' }}
+            onSubmit={handleCreateList}
+            onInvalid={console.log}
+          >
+            <TextField
+              autoFocus
+              sx={{ flexGrow: 1, marginTop: '1rem' }}
+              label='What is the name of new list?'
+              value={newListName}
+              onChange={(event) => setNewListName(event.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <ButtonGroup variant='text'>
+                    <Button
+                      title='Reset'
+                      disabled={!newListName}
+                      sx={{ margin: '8px' }}
+                      size='small'
+                      color='secondary'
+                      onClick={() => setNewListName('')}
+                    >
+                      <ClearIcon />
+                    </Button>
+                    <Button
+                      title='Create'
+                      disabled={!newListName}
+                      type='submit'
+                      sx={{ margin: '8px' }}
+                      size='small'
+                      color='primary'
+                    >
+                      <AddIcon />
+                    </Button>
+                  </ButtonGroup>
+                ),
+              }}
+            />
+          </form>
         </CardContent>
       </Card>
       {todoLists[activeList] && (
