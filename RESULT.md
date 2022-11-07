@@ -5,7 +5,7 @@ Project uses the default template and add a few dependencies to it.
 
 ## Backend
 
-The app now persists data on the server in json files. The `.data`directory gets created once first data are being written. It have two 'collections', one for lists and one for todos. The data are controlled by Mongo-like models in `models` directory. There was not a focus on database optimization, so once data are updated, the whole file gets overwritten.
+The app now persists data on the server in json files. The `.data` directory gets created once first data are being written. It have two 'collections', one for lists and one for todos. The data are controlled by Mongo-like models in `models` directory. There was not a focus on database optimization, so once data are updated, the whole file gets overwritten.
 
 There is a test coverage for database models. Tests can be ran with `npm test`.
 Some changes were made in `eslint` config in order to access eg async/await features.
